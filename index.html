@@ -1,54 +1,40 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" dir="ltr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faisal Alomair - Interactive Professional Dashboard</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; img-src 'self' data: https:;">
+    <title>Faisal Alomair - Career</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Chosen Palette: Slate Backgrounds, Indigo Primary, Emerald & Amber Accents -->
-    <!-- Application Structure Plan: The SPA transforms a traditional text-heavy CV into a dynamic "Professional Dashboard." It uses a top navigation bar for quick jumping, a hero section for immediate context, a split-view interactive experience timeline (allowing users to control reading flow and reduce cognitive load), a data visualization section for skills (quantifying qualitative self-assessments), and a grid for projects/education. This structure prioritizes active exploration and scannability over linear reading. -->
-    <!-- Visualization & Content Choices: 
-         1. Hero/Summary -> Goal: Inform -> Clean Typography + Unicode -> Immediate professional context.
-         2. Experience -> Goal: Organize/Change -> Interactive Split-View (List + Detail Panel) -> Manages the deeply expanded text efficiently, letting users drill down into specific roles.
-         3. Skills -> Goal: Compare -> Chart.js Radar & Horizontal Bar Charts -> Visualizes the multidimensional skill set (Design vs Code vs PM) instantly without reading long comma-separated lists. 
-         4. Projects/Edu -> Goal: Inform -> Grid Layout -> compartmentalizes information into digestible cards.
-         Method: Tailwind CSS for layout, Vanilla JS for state/updates, Chart.js for visualization. NO SVG/Mermaid. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
+<link rel="shortcut icon" href="promotion.png" type="image/x-icon">
     <style>
         body {
             background-color: #f8fafc;
             color: #0f172a;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
+        html[dir="rtl"] body {
+            font-family: 'Tajawal', 'Cairo', system-ui, sans-serif;
+        }
         .chart-container {
             position: relative;
             width: 100%;
             max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto;
             height: 350px;
             max-height: 400px;
         }
         @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
-            }
-        }
-        .nav-link {
-            transition: color 0.2s ease-in-out;
-        }
-        .nav-link:hover {
-            color: #4f46e5;
+            .chart-container { height: 400px; }
         }
         .card-hover {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .card-hover:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
         .tab-active {
             background-color: #4f46e5;
@@ -60,17 +46,13 @@
             color: #475569;
             border-color: #e2e8f0;
         }
-        .tab-inactive:hover {
-            background-color: #f1f5f9;
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-        }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="antialiased">
 
@@ -78,41 +60,43 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="font-extrabold text-2xl tracking-tight text-indigo-600">FA<span class="text-slate-800">.</span></div>
-                <div class="hidden md:flex space-x-8 text-sm font-semibold text-slate-600" id="nav-menu">
+                
+                <div class="flex items-center gap-4">
+                    <button id="mobile-menu-btn" class="md:hidden text-slate-600 text-2xl focus:outline-none">&#9776;</button>
+                    <div class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600" id="nav-menu"></div>
+                    <button id="lang-toggle" onclick="toggleLanguage()" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold text-sm border border-indigo-100 hover:bg-indigo-100 transition">
+                        العربية
+                    </button>
                 </div>
             </div>
+            <div id="mobile-nav" class="hidden flex-col gap-4 pb-4 font-semibold text-slate-600 border-t border-slate-100 pt-4"></div>
         </div>
     </nav>
 
-    <main class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-24">
+    <main class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-20">
 
-        <section id="summary" class="pt-4 scroll-mt-24">
-            <p class="text-sm font-medium text-indigo-600 mb-2 tracking-wide uppercase">Executive Summary Module</p>
-            <p class="text-slate-600 mb-8 max-w-4xl text-base leading-relaxed">
-                This initial section establishes the core professional identity, providing an immediate synthesis of expertise spanning UX/UI design, front-end development, and agile project management. It serves as the gateway to the detailed analytics below.
-            </p>
-
-            <div class="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-slate-200 flex flex-col lg:flex-row gap-10 items-start">
+        <section id="summary" class="scroll-mt-24">
+            <div class="bg-white rounded-3xl p-6 md:p-12 shadow-sm border border-slate-200 flex flex-col lg:flex-row gap-10 items-start">
                 <div class="flex-1 space-y-6">
-                    <div class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-full text-sm font-bold tracking-wide">
-                        <span class="text-lg">&#x1F4BB;</span> UX/UI Designer & Front-end Developer
+                    <div class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-full text-sm font-bold tracking-wide" id="t-role">
+                        <span>&#x1F4BB;</span> UX/UI Designer
                     </div>
-                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Faisal Alomair</h1>
+                    <h1 id="t-name" class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Faisal Alomair</h1>
                     
-                    <div class="flex flex-wrap gap-5 text-sm text-slate-700 font-semibold bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <span class="flex items-center gap-2"><span class="text-lg">&#x1F4CD;</span> Riyadh, Saudi Arabia</span>
-                        <span class="flex items-center gap-2"><span class="text-lg">&#x1F4DE;</span> 0506450775</span>
-                        <span class="flex items-center gap-2"><span class="text-lg">&#x2709;</span> FaisalA9@outlook.com</span>
+                    <div class="flex flex-wrap gap-4 text-sm text-slate-700 font-semibold bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <span class="flex items-center gap-2"><span>&#x1F4CD;</span> <span id="t-loc">Riyadh, Saudi Arabia</span></span>
+                        <span class="flex items-center gap-2"><span>&#x1F4DE;</span> 0506450775</span>
+                        <span class="flex items-center gap-2"><span>&#x2709;</span> FaisalA9@outlook.com</span>
                     </div>
 
-                    <p class="text-lg text-slate-700 leading-relaxed max-w-3xl" id="summary-text"></p>
+                    <p class="text-lg text-slate-700 leading-relaxed max-w-3xl" id="t-summary-text"></p>
 
                     <div class="pt-4 flex flex-wrap gap-4">
-                        <a href="https://linkedin.com/in/faisal-alomair-a21939254" target="_blank" class="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-bold shadow-md flex items-center gap-2">
-                            &#x1F517; LinkedIn Network
+                        <a href="https://linkedin.com/in/faisal-alomair-a21939254" target="_blank" class="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-bold shadow-md flex items-center gap-2" id="t-linkedin">
+                            &#x1F517; LinkedIn
                         </a>
-                        <a href="https://www.behance.net/fomair" target="_blank" class="px-6 py-3 bg-white text-slate-800 border-2 border-slate-200 rounded-xl hover:border-indigo-600 hover:text-indigo-600 transition font-bold shadow-sm flex items-center gap-2">
-                            &#x1F3A8; Behance Portfolio
+                        <a href="https://www.behance.net/fomair" target="_blank" class="px-6 py-3 bg-white text-slate-800 border-2 border-slate-200 rounded-xl hover:border-indigo-600 hover:text-indigo-600 transition font-bold shadow-sm flex items-center gap-2" id="t-behance">
+                            &#x1F3A8; Portfolio
                         </a>
                     </div>
                 </div>
@@ -120,347 +104,419 @@
         </section>
 
         <section id="experience" class="scroll-mt-24">
-            <div class="mb-10">
-                <p class="text-sm font-medium text-indigo-600 mb-2 tracking-wide uppercase">Interactive Career Trajectory</p>
-                <h2 class="text-3xl font-extrabold text-slate-900 mb-4">Professional Experience</h2>
-                <p class="text-slate-600 max-w-4xl text-base leading-relaxed">
-                    Explore the detailed operational, technical, and leadership methodologies applied across different roles. Utilize the interactive selection menu on the left to drill down into specific achievements, project management frameworks, and process optimizations for each respective position. This interactive structure allows for deep dives without overwhelming the interface.
-                </p>
+            <div class="mb-8">
+                <h2 id="t-sec2-title" class="text-3xl font-extrabold text-slate-900 mb-4">Professional Experience</h2>
             </div>
-
             <div class="flex flex-col lg:flex-row gap-8">
-                <div class="lg:w-1/3 flex flex-col gap-3" id="exp-nav-container">
-                </div>
-
-                <div class="lg:w-2/3 bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 min-h-[450px]" id="exp-detail-container">
-                </div>
+                <div class="lg:w-1/3 flex flex-col gap-3" id="exp-nav-container"></div>
+                <div class="lg:w-2/3 bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 min-h-[450px]" id="exp-detail-container"></div>
             </div>
         </section>
 
-        <section id="analytics" class="scroll-mt-24">
-            <div class="mb-10">
-                <p class="text-sm font-medium text-indigo-600 mb-2 tracking-wide uppercase">Competency Visualization</p>
-                <h2 class="text-3xl font-extrabold text-slate-900 mb-4">Skills Analytics Dashboard</h2>
-                <p class="text-slate-600 max-w-4xl text-base leading-relaxed">
-                    This module translates qualitative skill sets into quantitative, comparative visualizations. The Radar chart models the multidimensional balance between technical execution, design thinking, and operational leadership. The Bar chart measures specific proficiencies in industry-standard tools and frameworks, allowing for rapid assessment of technical depth.
-                </p>
+        <section id="skills" class="scroll-mt-24">
+            <div class="mb-8">
+                <h2 id="t-sec-skills-title" class="text-3xl font-extrabold text-slate-900 mb-4">Skills Analytics Dashboard</h2>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center card-hover">
-                    <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">&#x1F3AF; Multidisciplinary Balance</h3>
+                    <h3 id="t-chart1-title" class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2"><span>&#x1F3AF;</span> Multidisciplinary Balance</h3>
                     <div class="chart-container w-full">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
                 
                 <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center card-hover">
-                    <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">&#x1F6E0; Tool & Framework Proficiency</h3>
+                    <h3 id="t-chart2-title" class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2"><span>&#x1F6E0;</span> Technical Proficiency</h3>
                     <div class="chart-container w-full">
                         <canvas id="barChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6" id="skills-text-container">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="skills-list-container">
+                <!-- Populated by JS -->
             </div>
         </section>
 
         <section id="projects" class="scroll-mt-24">
-            <div class="mb-10">
-                <p class="text-sm font-medium text-indigo-600 mb-2 tracking-wide uppercase">Applied Knowledge</p>
-                <h2 class="text-3xl font-extrabold text-slate-900 mb-4">Projects & Academic Foundation</h2>
-                <p class="text-slate-600 max-w-4xl text-base leading-relaxed">
-                    This section systematically catalogs key technical deliverables and the academic foundations supporting them. The grid format organizes case studies (highlighting specific UX and development challenges) alongside formal education, providing a holistic view of theoretical knowledge and practical application.
-                </p>
-            </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 space-y-6">
-                    <h3 class="text-2xl font-bold text-slate-900 flex items-center gap-3 border-b-2 border-slate-100 pb-3">
-                        <span class="text-2xl">&#x1F680;</span> Technical & Design Projects
+                    <h3 id="t-proj-title" class="text-2xl font-bold text-slate-900 flex items-center gap-3 border-b-2 border-slate-100 pb-3">
+                        <span>&#x1F680;</span> Projects
                     </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="projects-grid">
-                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="projects-grid"></div>
                 </div>
 
                 <div class="space-y-6">
-                    <h3 class="text-2xl font-bold text-slate-900 flex items-center gap-3 border-b-2 border-slate-100 pb-3">
-                        <span class="text-2xl">&#x1F393;</span> Education & Certifications
+                    <h3 id="t-edu-title" class="text-2xl font-bold text-slate-900 flex items-center gap-3 border-b-2 border-slate-100 pb-3">
+                        <span>&#x1F393;</span> Education & Certifications
                     </h3>
-                    <div class="space-y-4" id="education-list">
-                    </div>
+                    <div class="space-y-4" id="education-list"></div>
                     
-                    <h3 class="text-2xl font-bold text-slate-900 flex items-center gap-3 border-b-2 border-slate-100 pb-3 mt-8">
-                        <span class="text-2xl">&#x1F310;</span> Languages
+                    <h3 id="t-lang-title" class="text-2xl font-bold text-slate-900 flex items-center gap-3 border-b-2 border-slate-100 pb-3 mt-8">
+                        <span>&#x1F310;</span> Languages
                     </h3>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <ul class="space-y-3 font-semibold text-slate-700">
-                            <li class="flex justify-between border-b border-slate-100 pb-2"><span>Arabic</span> <span class="text-indigo-600">Native (Bilingual)</span></li>
-                            <li class="flex justify-between"><span>English</span> <span class="text-indigo-600">Intermediate (Professional)</span></li>
-                        </ul>
+                        <ul class="space-y-3 font-semibold text-slate-700" id="languages-list"></ul>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
 
     <footer class="bg-slate-900 text-slate-400 py-10 text-center">
         <div class="max-w-7xl mx-auto px-4">
             <div class="font-bold text-2xl tracking-tight text-white mb-4">FA.</div>
-            <p class="text-sm">&#x00A9; 2026 Faisal Alomair. Built as a Single-Page Interactive Application.</p>
+            <p class="text-sm">&#x00A9; <span id="t-footer">2026 Faisal Alomair.</span></p>
         </div>
     </footer>
 
     <script>
-        const appData = {
-            nav: [
-                { id: 'summary', label: 'Summary' },
-                { id: 'experience', label: 'Experience' },
-                { id: 'analytics', label: 'Skills Analytics' },
-                { id: 'projects', label: 'Projects & Edu' }
-            ],
-            summaryText: "Versatile and highly analytical UX/UI Designer and Front-end Developer with a robust academic and practical background in computer programming and modern web development technologies. Highly skilled at engineering a unified connection between visual design and production-ready code. Proven capability in translating complex user feedback, qualitative user research, and strict business requirements into intuitive, accessible, and responsive digital solutions.",
-            experience: [
-                {
-                    id: 'inovo',
-                    title: 'Team Lead & Project Lead',
-                    company: 'Inovo Training Program',
-                    date: 'April 5, 2026 – June 12, 2026',
-                    icon: '&#x1F4BB;',
-                    details: [
-                        "<strong>Agile Project Management & Team Alignment:</strong> Spearheaded end-to-end project coordination and technical synchronization. Orchestrated daily stand-ups, managed sprint planning, set milestone targets, and delegated tasks using Jira to guarantee on-time delivery.",
-                        "<strong>UX/UI & Responsive Design Systems:</strong> Conceptualized and designed the visual architecture for the corporate website within Figma. Developed a cohesive design system incorporating typographic hierarchies, fluid responsive grids, and accessible interactive components.",
-                        "<strong>Front-end Development & Figma-to-Code:</strong> Executed a clean design-to-code workflow by exporting production-ready assets directly from Figma and manually translating layout structures into semantic, cross-browser-compliant HTML5 and modular CSS3 for inovo.sa.",
-                        "<strong>Quality Assurance:</strong> Conducted routine accessibility tests (verifying WCAG color contrast) and performance audits to ensure quick page loads and clean code execution."
-                    ]
+        let currentLang = 'en';
+        let activeExp = 'inovo';
+        let radarChartInstance = null;
+        let barChartInstance = null;
+
+        const i18n = {
+            en: {
+                nav: [
+                    {id: 'summary', text: 'Summary'}, 
+                    {id: 'experience', text: 'Experience'}, 
+                    {id: 'skills', text: 'Skills'}, 
+                    {id: 'projects', text: 'Projects'}
+                ],
+                role: "UX/UI Designer & Developer",
+                name: "Faisal Alomair",
+                loc: "Riyadh, Saudi Arabia",
+                summaryText: "UX/UI Designer with background in Programming and Web Development and solid experience in translating user needs into clear digital and operational solutions. Experience includes user research, wireframing, prototyping, usability testing, and transforming business requirements into practical interface designs. Proven ability to collaborate with cross-functional teams, improve customer experience, and support process optimization through design-driven thinking.",
+                linkedin: "LinkedIn",
+                behance: "Portfolio",
+                sec2Title: "Professional Experience",
+                secSkillsTitle: "Skills Analytics Dashboard",
+                chart1Title: "Multidisciplinary Balance",
+                chart2Title: "Technical Proficiency",
+                projTitle: "Projects",
+                eduTitle: "Education & Certifications",
+                langTitle: "Languages",
+                footer: "2026 Faisal Alomair.",
+                langs: [
+                    { name: "Arabic", level: "Native" },
+                    { name: "English", level: "Intermediate" }
+                ],
+                skillsText: [
+                    {
+                        title: "Personal Skills",
+                        icon: "&#x1F91D;",
+                        bg: "bg-indigo-50 border-indigo-100",
+                        text: "text-indigo-900",
+                        content: "Communication | Time Management | Problem Solving | Attention to Detail | Teamwork | Adaptability | Organization | Customer Focus"
+                    },
+                    {
+                        title: "Professional Skills",
+                        icon: "&#x1F3A8;",
+                        bg: "bg-emerald-50 border-emerald-100",
+                        text: "text-emerald-900",
+                        content: "User Research | Wireframing | Prototyping | Usability Testing | Information Architecture | Requirements Gathering | Cross-Functional Collaboration | Process Improvement | Customer Experience (CX)"
+                    },
+                    {
+                        title: "Technical Skills",
+                        icon: "&#x2699;",
+                        bg: "bg-amber-50 border-amber-100",
+                        text: "text-amber-900",
+                        content: "Figma | Design Systems | Front-end Development (HTML/CSS) | Figma-to-Code Exporting | Jira | Microsoft Office Suite | Social Media Awareness | Presentations | Email Marketing"
+                    }
+                ],
+                chartLabels: {
+                    radar: ['UX/UI Design', 'Front-end Code', 'Agile/PM', 'Client Comm.', 'Leadership', 'Operations'],
+                    bar: ['Figma / UI Design', 'HTML/CSS', 'Wireframing / IA', 'Usability Testing', 'Jira / Agile']
                 },
-                {
-                    id: 'marta-sup',
-                    title: 'Branch Manager',
-                    company: "Marta's Cake",
-                    date: 'January 2024 - December 2025',
-                    icon: '&#x1F4C8;',
-                    details: [
-                        "<strong>Bespoke Requirements Gathering:</strong> Conducted direct, consultative sessions with clients to capture detailed requirements for custom artistic designs. Translated qualitative aesthetic preferences into quantitative technical instructions for production.",
-                        "<strong>Cross-Functional Communication:</strong> Acted as the primary operational liaison between front-of-house staff, culinary teams, and management. Established SOPs that minimized fulfillment errors.",
-                        "<strong>Process Optimization & POS Rollouts:</strong> Analyzed customer feedback to introduce streamlined workflows. Spearheaded internal training programs during the rollout of upgraded POS and digital management systems, reducing order-processing time."
-                    ]
+                experience: [
+                    {
+                        id: 'inovo', title: 'Team Lead & Project Lead', company: 'Inovo Training Program', date: 'Apr 5, 2026 – Jun 12, 2026', icon: '&#x1F4BB;',
+                        details: [
+                            "Served as the Team Lead and Project Lead for the official corporate website (inovo.sa).",
+                            "Managed project timelines, sprints, and task delegation using Jira, successfully arranging and coordinating responsibilities across the team.",
+                            "Built the user interface (UI) for the website in Figma and handled the design-to-code process by exporting Figma files into code.",
+                            "Developed the website using front-end technologies, writing clean and responsive HTML and CSS."
+                        ]
+                    },
+                    {
+                        id: 'marta-sup', title: 'Branch Manager', company: "Marta's Cake", date: 'Jan 2024 - Dec 2025', icon: '&#x1F4C8;',
+                        details: [
+                            "Conducted face-to-face requirements gathering with customers for custom cake designs and translated needs into technical specifications.",
+                            "Served as primary communication channel between customers, management, and production team to ensure accurate implementation.",
+                            "Analyzed customer feedback and complaints to identify service gaps and propose experience improvements.",
+                            "Supported rollout of internal system updates for sales staff to streamline daily operations.",
+                            "Coordinated between front-of-house and production teams to ensure feasible and timely deliverables."
+                        ]
+                    },
+                    {
+                        id: 'marta-asst', title: 'Supervisor Assistant', company: "Marta's Cake", date: 'Jan 2022 - Jan 2024', icon: '&#x1F4E6;',
+                        details: [
+                            "Managed inventory levels and invoice processing for more than 500 SKUs.",
+                            "Ensured high product availability while reducing waste through stock control.",
+                            "Assisted in scheduling and workflow planning during peak business hours.",
+                            "Translated custom order specifications from clients to production team with high accuracy."
+                        ]
+                    },
+                    {
+                        id: 'marta-sales', title: 'Salesperson', company: "Marta's Cake", date: 'Aug 2021 - Jan 2022', icon: '&#x1F6CD;',
+                        details: [
+                            "Delivered customer service to more than 50 customers daily.",
+                            "Increased average transaction value through upselling of custom cake designs.",
+                            "Achieved consistent high sales performance leading to promotion track."
+                        ]
+                    }
+                ],
+                projects: [
+                    { link: "inovo.sa", name: "Inovo Corporate Website", desc: "Designed the complete user interface in Figma and utilized front-end development (HTML/CSS) to build and deploy the functional website (inovo.sa)." },
+                    { link: "Tuwaiq Academy", name: "Custom Cake Ordering Application", desc: "Designed a digital solution to streamline custom cake ordering, visualization, and pricing. Enabled customers to customize cake design and view final output before production." },
+                    { link: "Absher Hackathon", name: "Temporary Digital Visitor Identity System", desc: "Designed user interface for NFC-based digital identity solution. Created high-fidelity prototypes focused on accessibility and clear data visualization." }
+                ],
+                education: [
+                    { year: "2025", title: "UX/UI Designer Bootcamp", org: "Tuwaiq Academy, Riyadh", desc: "" },
+                    { year: "2025", title: "Foundation of UX Design", org: "Google", desc: "" },
+                    { year: "2023", title: "Diploma in Programming and Web Development", org: "Communications and Information College, Riyadh", desc: "" }
+                ]
+            },
+            ar: {
+                nav: [
+                    {id: 'summary', text: 'الملخص'}, 
+                    {id: 'experience', text: 'الخبرات'}, 
+                    {id: 'skills', text: 'المهارات'}, 
+                    {id: 'projects', text: 'المشاريع'}
+                ],
+                role: "مصمم تجربة مستخدم ومطور واجهات أمامية",
+                name: "فيصل العمير",
+                loc: "الرياض، المملكة العربية السعودية",
+                summaryText: "مصمم تجربة/واجهة مستخدم بخلفية في البرمجة وتطوير الويب وخبرة قوية في ترجمة احتياجات المستخدمين إلى حلول رقمية وتشغيلية واضحة. تشمل الخبرات بحث المستخدمين، وتخطيط الهيكلة، والنماذج الأولية، واختبار قابلية الاستخدام، وتحويل متطلبات العمل إلى تصميمات واجهات عملية. قدرة مثبتة على التعاون مع فرق متعددة التخصصات، وتحسين تجربة العملاء، ودعم تحسين العمليات من خلال التفكير المبني على التصميم.",
+                linkedin: "لينكد إن",
+                behance: "معرض الأعمال",
+                sec2Title: "الخبرات المهنية",
+                secSkillsTitle: "لوحة تحليلات المهارات",
+                chart1Title: "التوازن متعدد التخصصات",
+                chart2Title: "الكفاءة التقنية",
+                projTitle: "المشاريع",
+                eduTitle: "التعليم والشهادات",
+                langTitle: "اللغات",
+                footer: "2026 فيصل العمير.",
+                langs: [
+                    { name: "العربية", level: "اللغة الأم" },
+                    { name: "الإنجليزية", level: "متوسط" }
+                ],
+                skillsText: [
+                    {
+                        title: "المهارات الشخصية",
+                        icon: "&#x1F91D;",
+                        bg: "bg-indigo-50 border-indigo-100",
+                        text: "text-indigo-900",
+                        content: "التواصل | إدارة الوقت | حل المشكلات | الاهتمام بالتفاصيل | العمل الجماعي | القدرة على التكيف | التنظيم | التركيز على العملاء"
+                    },
+                    {
+                        title: "المهارات المهنية",
+                        icon: "&#x1F3A8;",
+                        bg: "bg-emerald-50 border-emerald-100",
+                        text: "text-emerald-900",
+                        content: "بحث المستخدمين | تخطيط الهيكلة | النماذج الأولية | اختبار قابلية الاستخدام | هندسة المعلومات | جمع المتطلبات | التعاون بين الفرق | تحسين العمليات | تجربة العملاء (CX)"
+                    },
+                    {
+                        title: "المهارات التقنية",
+                        icon: "&#x2699;",
+                        bg: "bg-amber-50 border-amber-100",
+                        text: "text-amber-900",
+                        content: "Figma | أنظمة التصميم | تطوير الواجهات (HTML/CSS) | تحويل التصميم لكود | Jira | حزمة مايكروسوفت أوفيس | التسويق الرقمي | العروض التقديمية"
+                    }
+                ],
+                chartLabels: {
+                    radar: ['تصميم تجربة المستخدم', 'تطوير الواجهات', 'إدارة المشاريع', 'التواصل مع العملاء', 'القيادة', 'العمليات'],
+                    bar: ['Figma / تصميم واجهات', 'HTML/CSS', 'تخطيط وهيكلة', 'اختبار قابلية الاستخدام', 'Jira / أجايل']
                 },
-                {
-                    id: 'marta-asst',
-                    title: 'Supervisor Assistant',
-                    company: "Marta's Cake",
-                    date: 'January 2022 - January 2024',
-                    icon: '&#x1F4E6;',
-                    details: [
-                        "<strong>Inventory & Supply Chain Management:</strong> Managed comprehensive stock levels and invoice reconciliations for an active inventory exceeding 500 SKUs. Leveraged historical sales patterns to anticipate spikes and cut raw material waste.",
-                        "<strong>Data-Driven Scheduling:</strong> Optimized weekly team shift scheduling and task prioritization based on projected high-volume peak operational hours, ensuring maximum labor efficiency.",
-                        "<strong>Precision Documentation:</strong> Double-checked intricate client orders against blueprints. Accurately documented and communicated micro-specifications, eliminating expensive rework cycles."
-                    ]
-                },
-                {
-                    id: 'marta-sales',
-                    title: 'Salesperson',
-                    company: "Marta's Cake",
-                    date: 'August 2021 - January 2022',
-                    icon: '&#x1F6CD;',
-                    details: [
-                        "<strong>Consultative Selling & CX:</strong> Provided specialized front-line service to more than 50 customers daily. Practiced active listening to pitch premium custom design options, increasing average transaction values.",
-                        "<strong>Sales Growth & Advancement:</strong> Consistently met and exceeded personal monthly sales quotas. Demonstrated outstanding problem-solving skills that resulted in immediate fast-track promotions to management."
-                    ]
-                }
-            ],
-            skillsText: [
-                {
-                    cat: "UX/UI Design & Research",
-                    icon: "&#x1F3A8;",
-                    bg: "bg-indigo-50 border-indigo-100",
-                    text: "text-indigo-900",
-                    items: "User Research & Insights, Wireframing & Interactive Prototyping, Usability Testing, Information Architecture (IA), User Personas, Empathy Mapping, Responsive Layouts, Typography, Heuristic Appraisals, Design Systems & Auto-Layout (Figma)."
-                },
-                {
-                    cat: "Technical Engineering",
-                    icon: "&#x2699;",
-                    bg: "bg-emerald-50 border-emerald-100",
-                    text: "text-emerald-900",
-                    items: "Front-end Web Development (HTML5, CSS3), Figma-to-Code Asset Translation, Agile Frameworks (Scrum & Kanban), Project Management & Milestone Planning (Jira), Technical Requirements Gathering, Version Control Basics."
-                },
-                {
-                    cat: "Professional & Soft Skills",
-                    icon: "&#x1F91D;",
-                    bg: "bg-amber-50 border-amber-100",
-                    text: "text-amber-900",
-                    items: "Team Leadership & Motivation, Agile Collaboration, Cross-Functional Communication, Analytical Problem Solving, Strategic Customer Experience (CX) Optimization, Conflict Resolution, Business Analysis."
-                }
-            ],
-            projects: [
-                {
-                    name: "Inovo Corporate Website",
-                    link: "inovo.sa",
-                    desc: "Directed the end-to-end design and developer operations of the corporate landing page. Personally authored the responsive layout systems and micro-interactions, resulting in optimized visual presentation and fast load speeds."
-                },
-                {
-                    name: "Custom Cake Ordering Application",
-                    link: "Tuwaiq Academy",
-                    desc: "Designed the interactive interface of a digital platform dedicated to cake customization. Built complex mockups allowing real-time structural and theme customization with dynamic cost estimations."
-                },
-                {
-                    name: "Digital Visitor Identity System",
-                    link: "Absher Hackathon",
-                    desc: "Engineered a highly accessible UX and prototyping architecture for an NFC-powered digital identity card system. Focused heavily on high-contrast dark-mode configurations and streamlined user flows for public security scannability."
-                }
-            ],
-            education: [
-                {
-                    year: "2025",
-                    title: "UX/UI Designer Bootcamp",
-                    org: "Tuwaiq Academy, Riyadh",
-                    desc: "Intensive hands-on program covering modern design principles, prototyping, and cross-functional hand-offs."
-                },
-                {
-                    year: "2025",
-                    title: "Foundation of UX Design",
-                    org: "Google Certification",
-                    desc: "Comprehensive program focusing on design sprint methodologies, empathy mapping, and accessibility."
-                },
-                {
-                    year: "2023",
-                    title: "Diploma: Programming & Web Dev",
-                    org: "Communications & Info College",
-                    desc: "Academic program focused on CS fundamentals, structured databases, and OOP."
-                }
-            ]
+                experience: [
+                    {
+                        id: 'inovo', title: 'قائد الفريق وقائد المشروع', company: 'برنامج إنوفو للتدريب', date: '5 أبريل 2026 – 12 يونيو 2026', icon: '&#x1F4BB;',
+                        details: [
+                            "عملت كقائد فريق وقائد مشروع للموقع الإلكتروني الرسمي للشركة (inovo.sa).",
+                            "إدارة الجداول الزمنية للمشروع وفترات العمل (Sprints) وتفويض المهام باستخدام Jira، مع ترتيب وتنسيق المسؤوليات بنجاح بين أعضاء الفريق.",
+                            "بناء واجهة المستخدم (UI) للموقع في Figma والتعامل مع عملية تحويل التصميم إلى كود عن طريق تصدير ملفات Figma إلى كود.",
+                            "تطوير الموقع باستخدام تقنيات الواجهة الأمامية، وكتابة أكواد HTML و CSS نظيفة ومتجاوبة."
+                        ]
+                    },
+                    {
+                        id: 'marta-sup', title: 'مدير فرع', company: "كيكة مارتا", date: 'يناير 2024 - ديسمبر 2025', icon: '&#x1F4C8;',
+                        details: [
+                            "إجراء جمع المتطلبات وجهاً لوجه مع العملاء لتصميمات الكيك المخصصة وترجمة الاحتياجات إلى مواصفات فنية.",
+                            "العمل كقناة اتصال رئيسية بين العملاء والإدارة وفريق الإنتاج لضمان التنفيذ الدقيق.",
+                            "تحليل ملاحظات وشكاوى العملاء لتحديد الفجوات في الخدمة واقتراح تحسينات على التجربة.",
+                            "دعم إطلاق تحديثات النظام الداخلي لموظفي المبيعات لتسهيل العمليات اليومية.",
+                            "التنسيق بين موظفي الاستقبال وفرق الإنتاج لضمان تسليم المنتجات في الوقت المناسب."
+                        ]
+                    },
+                    {
+                        id: 'marta-asst', title: 'مساعد مشرف', company: "كيكة مارتا", date: 'يناير 2022 - يناير 2024', icon: '&#x1F4E6;',
+                        details: [
+                            "إدارة مستويات المخزون ومعالجة الفواتير لأكثر من 500 وحدة تخزين (SKU).",
+                            "ضمان توفر المنتجات بشكل عالٍ مع تقليل الهدر من خلال التحكم في المخزون.",
+                            "المساعدة في جدولة وتخطيط سير العمل خلال ساعات ذروة العمل.",
+                            "ترجمة مواصفات الطلبات المخصصة من العملاء إلى فريق الإنتاج بدقة عالية."
+                        ]
+                    },
+                    {
+                        id: 'marta-sales', title: 'بائع', company: "كيكة مارتا", date: 'أغسطس 2021 - يناير 2022', icon: '&#x1F6CD;',
+                        details: [
+                            "تقديم خدمة العملاء لأكثر من 50 عميلاً يومياً.",
+                            "زيادة متوسط قيمة المعاملة من خلال الارتقاء بالمبيعات (Upselling) لتصميمات الكيك المخصصة.",
+                            "تحقيق أداء مبيعات عالٍ ومستمر أدى إلى مسار الترقية."
+                        ]
+                    }
+                ],
+                projects: [
+                    { link: "inovo.sa", name: "موقع شركة إنوفو", desc: "تصميم واجهة المستخدم الكاملة في Figma واستخدام تطوير الواجهة الأمامية (HTML/CSS) لبناء ونشر الموقع الإلكتروني (inovo.sa)." },
+                    { link: "أكاديمية طويق", name: "تطبيق طلب الكيك المخصص", desc: "تصميم حل رقمي لتسهيل طلبات الكيك المخصصة والتصور المرئي والتسعير. تمكين العملاء من تخصيص تصميم الكيك ورؤية المخرج النهائي قبل الإنتاج." },
+                    { link: "هاكاثون أبشر", name: "نظام الهوية الرقمية للزوار", desc: "تصميم واجهة مستخدم لحل الهوية الرقمية المعتمد على تقنية NFC. إنشاء نماذج أولية عالية الدقة تركز على إمكانية الوصول والتصور الواضح للبيانات." }
+                ],
+                education: [
+                    { year: "2025", title: "معسكر تصميم تجربة المستخدم", org: "أكاديمية طويق، الرياض", desc: "" },
+                    { year: "2025", title: "أساسيات تصميم تجربة المستخدم", org: "جوجل", desc: "" },
+                    { year: "2023", title: "دبلوم البرمجة وتطوير الويب", org: "كلية الاتصالات والمعلومات، الرياض", desc: "" }
+                ]
+            }
         };
 
-        let appState = {
-            activeExp: appData.experience[0].id
-        };
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLang;
+            document.getElementById('lang-toggle').innerText = currentLang === 'en' ? 'العربية' : 'English';
+            renderContent();
+        }
 
-        function buildNavigation() {
-            const navContainer = document.getElementById('nav-menu');
-            appData.nav.forEach(item => {
-                const a = document.createElement('a');
-                a.href = `#${item.id}`;
-                a.className = 'nav-link';
-                a.textContent = item.label;
-                navContainer.appendChild(a);
+        function renderContent() {
+            const data = i18n[currentLang];
+            
+            document.getElementById('t-role').innerHTML = `<span>&#x1F4BB;</span> ${data.role}`;
+            document.getElementById('t-name').innerText = data.name;
+            document.getElementById('t-loc').innerText = data.loc;
+            document.getElementById('t-summary-text').innerText = data.summaryText;
+            document.getElementById('t-linkedin').innerHTML = `&#x1F517; ${data.linkedin}`;
+            document.getElementById('t-behance').innerHTML = `&#x1F3A8; ${data.behance}`;
+            
+            document.getElementById('t-sec2-title').innerText = data.sec2Title;
+            document.getElementById('t-sec-skills-title').innerText = data.secSkillsTitle;
+            document.getElementById('t-chart1-title').innerHTML = `<span>&#x1F3AF;</span> ${data.chart1Title}`;
+            document.getElementById('t-chart2-title').innerHTML = `<span>&#x1F6E0;</span> ${data.chart2Title}`;
+            
+            document.getElementById('t-proj-title').innerHTML = `<span>&#x1F680;</span> ${data.projTitle}`;
+            document.getElementById('t-edu-title').innerHTML = `<span>&#x1F393;</span> ${data.eduTitle}`;
+            document.getElementById('t-lang-title').innerHTML = `<span>&#x1F310;</span> ${data.langTitle}`;
+            document.getElementById('t-footer').innerText = data.footer;
+
+            const navMenu = document.getElementById('nav-menu');
+            const mobileNav = document.getElementById('mobile-nav');
+            navMenu.innerHTML = '';
+            mobileNav.innerHTML = '';
+            data.nav.forEach(item => {
+                const link = `<a href="#${item.id}" class="hover:text-indigo-600 transition-colors">${item.text}</a>`;
+                navMenu.innerHTML += link;
+                mobileNav.innerHTML += link;
             });
-            document.getElementById('summary-text').innerHTML = appData.summaryText;
+
+            const langList = document.getElementById('languages-list');
+            langList.innerHTML = '';
+            data.langs.forEach(l => {
+                langList.innerHTML += `<li class="flex justify-between border-b border-slate-100 pb-2"><span>${l.name}</span> <span class="text-indigo-600">${l.level}</span></li>`;
+            });
+
+            renderExperienceMenu();
+            renderExperienceDetails();
+            renderSkillsLists();
+            updateCharts();
+            renderProjectsAndEdu();
         }
 
         function renderExperienceMenu() {
+            const data = i18n[currentLang];
             const container = document.getElementById('exp-nav-container');
             container.innerHTML = '';
             
-            appData.experience.forEach(exp => {
+            data.experience.forEach(exp => {
                 const btn = document.createElement('button');
-                const isActive = appState.activeExp === exp.id;
+                const isActive = activeExp === exp.id;
+                const textAlign = currentLang === 'ar' ? 'text-right' : 'text-left';
                 
-                btn.className = `w-full text-left px-6 py-5 rounded-2xl border-2 transition-all duration-200 flex flex-col font-semibold ${isActive ? 'tab-active shadow-md scale-[1.02]' : 'tab-inactive'}`;
+                btn.className = `w-full ${textAlign} px-6 py-5 rounded-2xl border-2 transition-all duration-200 flex flex-col font-semibold ${isActive ? 'tab-active shadow-md scale-[1.02]' : 'tab-inactive'}`;
                 
                 btn.onclick = () => {
-                    appState.activeExp = exp.id;
+                    activeExp = exp.id;
                     renderExperienceMenu();
                     renderExperienceDetails();
                 };
 
-                btn.innerHTML = `
-                    <div class="text-lg mb-1">${exp.title}</div>
-                    <div class="text-sm font-medium ${isActive ? 'text-indigo-200' : 'text-slate-500'}">${exp.company}</div>
-                `;
+                btn.innerHTML = `<div class="text-lg mb-1">${exp.title}</div><div class="text-sm font-medium ${isActive ? 'text-indigo-200' : 'text-slate-500'}">${exp.company}</div>`;
                 container.appendChild(btn);
             });
         }
 
         function renderExperienceDetails() {
+            const data = i18n[currentLang];
             const container = document.getElementById('exp-detail-container');
-            const exp = appData.experience.find(e => e.id === appState.activeExp);
+            const exp = data.experience.find(e => e.id === activeExp);
             
             container.innerHTML = '';
-            
             const content = document.createElement('div');
             content.className = 'fade-in';
             
-            let lis = exp.details.map(d => `<li class="relative pl-7 before:content-['\\2022'] before:absolute before:left-0 before:text-indigo-500 before:font-bold before:text-2xl text-slate-700 leading-relaxed">${d}</li>`).join('');
+            const paddingDir = currentLang === 'ar' ? 'pr-7' : 'pl-7';
+            const beforeDir = currentLang === 'ar' ? 'before:right-0' : 'before:left-0';
+            
+            let lis = exp.details.map(d => `<li class="relative ${paddingDir} before:content-['\\2022'] before:absolute ${beforeDir} before:text-indigo-500 before:font-bold before:text-2xl text-slate-700 leading-relaxed">${d}</li>`).join('');
 
             content.innerHTML = `
                 <div class="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
-                    <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-indigo-100">
-                        ${exp.icon}
-                    </div>
+                    <div class="min-w-[4rem] h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-indigo-100">${exp.icon}</div>
                     <div>
-                        <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight">${exp.title}</h3>
+                        <h3 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">${exp.title}</h3>
                         <div class="text-slate-600 font-semibold mt-1 text-lg">${exp.company} <span class="mx-2 text-slate-300">|</span> ${exp.date}</div>
                     </div>
                 </div>
-                <ul class="space-y-5 text-lg">
-                    ${lis}
-                </ul>
+                <ul class="space-y-5 text-lg">${lis}</ul>
             `;
-            
             container.appendChild(content);
         }
 
-        function renderSkillsText() {
-            const container = document.getElementById('skills-text-container');
-            appData.skillsText.forEach(skill => {
-                const div = document.createElement('div');
-                div.className = `${skill.bg} p-6 rounded-2xl border card-hover flex flex-col h-full`;
-                div.innerHTML = `
-                    <h4 class="font-extrabold ${skill.text} mb-3 text-lg flex items-center gap-2">
-                        <span>${skill.icon}</span> ${skill.cat}
-                    </h4>
-                    <p class="text-sm text-slate-700 leading-relaxed font-medium mt-auto">
-                        ${skill.items}
-                    </p>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function renderProjectsAndEdu() {
-            const projGrid = document.getElementById('projects-grid');
-            appData.projects.forEach(p => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-2xl shadow-sm border border-slate-200 card-hover flex flex-col h-full";
-                card.innerHTML = `
-                    <div class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-2">${p.link}</div>
-                    <h4 class="text-xl font-extrabold text-slate-900 mb-3 leading-tight">${p.name}</h4>
-                    <p class="text-sm text-slate-600 leading-relaxed flex-grow font-medium">${p.desc}</p>
-                `;
-                projGrid.appendChild(card);
-            });
-
-            const eduList = document.getElementById('education-list');
-            appData.education.forEach(e => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-5 rounded-2xl shadow-sm border border-slate-200 card-hover flex gap-4 items-start";
-                card.innerHTML = `
-                    <div class="bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-sm border border-slate-200">${e.year}</div>
-                    <div>
-                        <h4 class="font-bold text-slate-900 text-lg leading-tight mb-1">${e.title}</h4>
-                        <div class="text-sm font-bold text-indigo-600 mb-2">${e.org}</div>
-                        <p class="text-sm text-slate-600 leading-relaxed">${e.desc}</p>
+        function renderSkillsLists() {
+            const data = i18n[currentLang];
+            const container = document.getElementById('skills-list-container');
+            container.innerHTML = '';
+            
+            data.skillsText.forEach(s => {
+                container.innerHTML += `
+                    <div class="${s.bg} p-6 rounded-2xl border card-hover flex flex-col h-full">
+                        <h4 class="font-extrabold ${s.text} mb-3 text-lg flex items-center gap-2">
+                            <span>${s.icon}</span> ${s.title}
+                        </h4>
+                        <p class="text-sm text-slate-700 leading-relaxed font-medium mt-auto">
+                            ${s.content}
+                        </p>
                     </div>
                 `;
-                eduList.appendChild(card);
             });
         }
 
-        function initializeCharts() {
-            Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+        function updateCharts() {
+            const data = i18n[currentLang];
+            Chart.defaults.font.family = currentLang === 'ar' ? "'Tajawal', 'Cairo', system-ui, sans-serif" : "'Inter', system-ui, sans-serif";
             Chart.defaults.color = '#475569';
             Chart.defaults.font.size = 13;
 
+            if (radarChartInstance) radarChartInstance.destroy();
             const ctxRadar = document.getElementById('radarChart').getContext('2d');
-            new Chart(ctxRadar, {
+            radarChartInstance = new Chart(ctxRadar, {
                 type: 'radar',
                 data: {
-                    labels: ['UX/UI Design', 'Front-end Code', 'Agile/PM', 'Client Comm.', 'Leadership', 'Operations'],
+                    labels: data.chartLabels.radar,
                     datasets: [{
-                        label: 'Competency Level',
+                        label: 'Score',
                         data: [95, 85, 90, 95, 90, 85],
                         backgroundColor: 'rgba(79, 70, 229, 0.15)',
                         borderColor: 'rgba(79, 70, 229, 1)',
@@ -482,40 +538,27 @@
                             ticks: { display: false, min: 0, max: 100 }
                         }
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            padding: 12,
-                            titleFont: { size: 14 },
-                            bodyFont: { size: 14, weight: 'bold' },
-                            displayColors: false,
-                            callbacks: {
-                                label: function(context) { return 'Score: ' + context.raw + '/100'; }
-                            }
-                        }
-                    }
+                    plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)' } }
                 }
             });
 
+            if (barChartInstance) barChartInstance.destroy();
             const ctxBar = document.getElementById('barChart').getContext('2d');
-            new Chart(ctxBar, {
+            barChartInstance = new Chart(ctxBar, {
                 type: 'bar',
                 data: {
-                    labels: ['Figma / Design Sys', 'HTML5 / CSS3', 'Jira / Scrum', 'Wireframing / IA', 'Usability Testing', 'Business Analysis'],
+                    labels: data.chartLabels.bar,
                     datasets: [{
-                        label: 'Proficiency Score',
-                        data: [98, 88, 92, 95, 90, 85],
+                        label: 'Score',
+                        data: [98, 88, 95, 90, 92],
                         backgroundColor: [
                             'rgba(79, 70, 229, 0.8)',
                             'rgba(14, 165, 233, 0.8)',
                             'rgba(16, 185, 129, 0.8)',
                             'rgba(245, 158, 11, 0.8)',
-                            'rgba(139, 92, 246, 0.8)',
-                            'rgba(99, 102, 241, 0.8)'
+                            'rgba(139, 92, 246, 0.8)'
                         ],
-                        borderRadius: 6,
-                        borderSkipped: false
+                        borderRadius: 6
                     }]
                 },
                 options: {
@@ -523,37 +566,51 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        x: { 
-                            grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false },
-                            max: 100,
-                            ticks: { display: false } 
-                        },
-                        y: { 
-                            grid: { display: false, drawBorder: false },
-                            ticks: { font: { weight: '600' }, color: '#334155' }
-                        }
+                        x: { grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false }, max: 100, ticks: { display: false } },
+                        y: { grid: { display: false, drawBorder: false }, ticks: { font: { weight: '600' }, color: '#334155' } }
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            padding: 12,
-                            titleFont: { size: 13 },
-                            bodyFont: { size: 14, weight: 'bold' },
-                            displayColors: false
-                        }
-                    }
+                    plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)' } }
                 }
             });
         }
 
+        function renderProjectsAndEdu() {
+            const data = i18n[currentLang];
+            const projGrid = document.getElementById('projects-grid');
+            projGrid.innerHTML = '';
+            data.projects.forEach(p => {
+                projGrid.innerHTML += `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 card-hover flex flex-col h-full">
+                        <div class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-2">${p.link}</div>
+                        <h4 class="text-xl font-extrabold text-slate-900 mb-3 leading-tight">${p.name}</h4>
+                        <p class="text-sm text-slate-600 leading-relaxed flex-grow font-medium">${p.desc}</p>
+                    </div>
+                `;
+            });
+
+            const eduList = document.getElementById('education-list');
+            eduList.innerHTML = '';
+            data.education.forEach(e => {
+                eduList.innerHTML += `
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 card-hover flex gap-4 items-start">
+                        <div class="bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-sm border border-slate-200">${e.year}</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-lg leading-tight mb-1">${e.title}</h4>
+                            <div class="text-sm font-bold text-indigo-600 mb-2">${e.org}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.classList.toggle('hidden');
+            mobileNav.classList.toggle('flex');
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
-            buildNavigation();
-            renderExperienceMenu();
-            renderExperienceDetails();
-            renderSkillsText();
-            renderProjectsAndEdu();
-            initializeCharts();
+            renderContent();
         });
     </script>
 </body>
